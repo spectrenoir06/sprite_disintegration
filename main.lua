@@ -3,12 +3,10 @@ local vector = require "vector"
 
 function love.load()
 
-	reduc = 1
+	reduc = 1 -- taile des pixel (1-5)
+	zoom = 2  -- (zoom 1 - 999)
 
 	local img = love.graphics.newImage(reduc..'.png')
-
-	mario = love.graphics.newImage('ninja.png')
-
 	psystem = love.graphics.newParticleSystem(img, 1)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
@@ -20,7 +18,7 @@ function love.load()
 	psystem:setLinearDamping( 1, 1.5 )
 	-- psystem:setRelativeRotation( true )
 
-	canevas = love.graphics.newCanvas(1280, 720)
+	canevas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 	canevas:setFilter('nearest', 'nearest')
 
 	dead = false
@@ -51,6 +49,30 @@ function love.load()
 			particules = {},
 			x = 300,
 			y = 10
+		},
+		{
+			img = love.graphics.newImage('ninja.png'),
+			particules = {},
+			x = 500	,
+			y = 10
+		},
+		{
+			img = love.graphics.newImage('ninja.png'),
+			particules = {},
+			x = 550,
+			y = 200
+		},
+		{
+			img = love.graphics.newImage('ninja.png'),
+			particules = {},
+			x = 450,
+			y = 230
+		},
+		{
+			img = love.graphics.newImage('ninja.png'),
+			particules = {},
+			x = 200,
+			y = 100
 		}
 	}
 
@@ -62,6 +84,7 @@ function spawn(explox, exploy)
 	local explo = vector(explox, exploy)
 	for _, obj in ipairs(all) do
 		obj.particules = {}
+		obj.timer = 0
 		for x = 1, obj.img:getWidth() / reduc do
 			for y = 1, obj.img:getHeight() / reduc do
 				local r, g, b, a = obj.img:getData():getPixel(x * reduc - 1, y * reduc - 1)
@@ -101,7 +124,7 @@ function love.draw()
 		end
 
 	love.graphics.setCanvas()
-	love.graphics.draw(canevas, 0, 0, 0, 1)
+	love.graphics.draw(canevas, 0, 0, 0, zoom)
 end
 
 function love.update(dt)
@@ -110,6 +133,12 @@ function love.update(dt)
 		for _, ps in ipairs(obj.particules) do
 			ps.ps:update(dt)
 			nb_ps = nb_ps + 1
+		end
+		if #obj.particules > 0 then
+			obj.timer = obj.timer + dt
+			if obj.timer > 2 then
+				obj.particules = {}
+			end
 		end
 	end
 	timer = timer + dt * 50
