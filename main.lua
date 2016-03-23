@@ -5,6 +5,7 @@ function love.load()
 
 	reduc = 1 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
+	reduc_color =  1 --( 1 - 256)
 
 	img = {}
 
@@ -15,8 +16,10 @@ function love.load()
 	offX = 0
 	offY = 0
 
+	mario = love.graphics.newImage('mario.png')
 
-	psystem = love.graphics.newParticleSystem(img[reduc], 500)
+
+	psystem = love.graphics.newParticleSystem(img[reduc], 1000)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
@@ -36,10 +39,10 @@ function love.load()
 
 	all = {
 		{
-			img = love.graphics.newImage('avion.png'),
+			img = love.graphics.newImage('ninja.png'),
 			particules = {},
-			x = 150,
-			y = 10,
+			x = 300,
+			y = 300,
 			timer = 0
 		},
 		{
@@ -107,16 +110,22 @@ function spawn(explox, exploy)
 			for y = 1, obj.img:getHeight() / reduc do
 				local r, g, b, a = data:getPixel(x * reduc - 1, y * reduc - 1)
 				if a == 255 then
-					if obj.particules[string.format("#%x%x%x",r,g,b)] == nil then
+					local str = string.format("#%x%x%x",
+						math.floor(r/reduc_color),
+						math.floor(g/reduc_color),
+						math.floor(b/reduc_color)
+					)
+					if obj.particules[str] == nil then
 						local ps = psystem:clone()
-						local v = vector(x + obj.x, y + obj.y)
-						ps:setDirection(v:angleTo(explo))
+						local dx, dy = (x + obj.x) - love.mouse.getX(), (y + obj.y) - love.mouse.getY()
+						local rot =  math.atan2(dx, dy)
+						ps:setDirection(rot)
 						ps:setColors(r, g, b, a, r, g, b, a)
-						obj.particules[string.format("#%x%x%x",r,g,b)] = ps
+						obj.particules[str] = ps
 						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
 						ps:emit(1)
 					else
-						local ps = obj.particules[string.format("#%x%x%x",r,g,b)]
+						local ps = obj.particules[str]
 						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
 						ps:emit(1)
 					end
@@ -154,9 +163,24 @@ function love.draw()
 	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
 	love.graphics.print("Zoom: "..zoom, 5, 40)
 	love.graphics.print("Particule size: "..reduc, 5, 55)
-	love.graphics.print("[space] or Click = destroy", 5, 70)
-	love.graphics.print("[f1-f2] = zoom", 5, 85)
-	love.graphics.print("[f3-f4] = zoom", 5, 100)
+	love.graphics.print("reduc color:"..reduc_color, 5, 70)
+
+	love.graphics.print("[space] or Click = destroy", 5, 170)
+	love.graphics.print("[f1-f2] = zoom", 5, 185)
+	love.graphics.print("[f3-f4] = zoom", 5, 200)
+	love.graphics.print("[mouse wheel] = color", 5, 215)
+
+
+	-- if love.mouse.isDown(1) then
+	-- 	local dx, dy = love.mouse.getX() - 300, love.mouse.getY() - 300
+	-- 	local r =  math.atan2(dx, dy)
+	-- 	love.graphics.setColor(255,255,0)
+	-- 	love.graphics.line(love.mouse.getX(), love.mouse.getY(), 300, 300)
+	-- 	love.graphics.setColor(255,0,0)
+	-- 	love.graphics.draw(mario, 300, 300, r)
+	-- 	love.graphics.setColor(255,255,255)
+	-- 	print(dx,dy, r + math.pi)
+	-- end
 end
 
 function love.update(dt)
@@ -215,4 +239,12 @@ end
 function love.mousepressed(x, y, button)
 	dead = true
 	spawn(x, y)
+end
+
+
+function love.wheelmoved( x, y )
+	print(x,y)
+	reduc_color = reduc_color + y
+	if reduc_color < 1 then reduc_color = 1 end
+	if reduc_color > 256 then reduc_color = 256 end
 end
