@@ -1,6 +1,6 @@
 extern vec3 iResolution;
 extern number iGlobalTime;
-// extern vec4 iMouse;
+extern vec4 iMouse;
 
 
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords){
@@ -11,14 +11,14 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords){
 	number offset = (iGlobalTime - floor(iGlobalTime)) / (iGlobalTime);
 		number CurrentTime = (iGlobalTime)*(offset);
 
-	vec3 WaveParams = vec3(10.0, 0.8, 0.1 );
+	vec3 WaveParams = vec3(10.0, 0.2, 0.1 );
 
 	number ratio = iResolution.y/iResolution.x;
 
 	//Use this if you want to place the centre with the mouse instead
-	//vec2 WaveCentre = vec2( iMouse.xy / iResolution.xy );
+	vec2 WaveCentre = vec2( iMouse.xy / iResolution.xy );
 
-	vec2 WaveCentre = vec2(0.5, 0.5);
+	// vec2 WaveCentre = vec2(0.5, 0.5);
 	WaveCentre.y *= ratio;
 
 	vec2 texCoord = fragCoord.xy / iResolution.xy;

@@ -21,10 +21,9 @@ function love.load()
 
 	psystem = love.graphics.newParticleSystem(img[reduc], 2500)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
-	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
+	psystem:setLinearAcceleration(10, -10, 10, -10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
 	psystem:setSpeed(400, 500)
-	psystem:setDirection(0)
 	psystem:setSpread(0.1)
 	psystem:setRotation(5)
 	psystem:setLinearDamping(1, 1.5)
@@ -198,7 +197,7 @@ function love.update(dt)
 	-- When converting, the following variables were requested from the shader...
 	shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
 	shader:send('iGlobalTime', time)
-	-- shader:send('iMouse', { love.mouse.getX(), love.mouse.getY(), 0, 0 })
+	shader:send('iMouse', { love.mouse.getX(), love.mouse.getY(), 0, 0 })
 end
 
 function love.keypressed(key)
