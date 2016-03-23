@@ -3,11 +3,11 @@ local vector = require "vector"
 
 function love.load()
 
-	reduc = 1 -- taile des pixel (1-5)
+	reduc = 2 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
 
 	local img = love.graphics.newImage(reduc..'.png')
-	psystem = love.graphics.newParticleSystem(img, 1)
+	psystem = love.graphics.newParticleSystem(img, 500)
 	psystem:setParticleLifetime(5, 5) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
@@ -140,9 +140,9 @@ function love.update(dt)
 		end
 		if #obj.particules > 0 then
 			obj.timer = obj.timer + dt
-			if obj.timer > 5 then
-				obj.particules = {}
-			end
+			-- if obj.timer > 5 then
+			-- 	obj.particules = {}
+			-- end
 		end
 	end
 	timer = timer + dt * 50
