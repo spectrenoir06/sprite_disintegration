@@ -5,7 +5,7 @@ function love.load()
 
 	reduc = 1 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
-	reduc_color =  1 --( 1 - 256)
+	reduc_color =  120 --( 1 - 256)
 
 	img = {}
 
@@ -117,7 +117,7 @@ function spawn(explox, exploy)
 					)
 					if obj.particules[str] == nil then
 						local ps = psystem:clone()
-						local dx, dy = (x + obj.x) - love.mouse.getX(), (y + obj.y) - love.mouse.getY()
+						local dx, dy = (x + obj.x) - explox, (y + obj.y) - exploy
 						local rot =  math.atan2(dx, dy)
 						ps:setDirection(rot)
 						ps:setColors(r, g, b, a, r, g, b, a)
