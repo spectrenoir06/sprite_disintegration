@@ -154,7 +154,7 @@ function love.draw()
 	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
 	love.graphics.print("Zoom: "..zoom, 5, 40)
 	love.graphics.print("Particule size: "..reduc, 5, 55)
-	love.graphics.print("[space] = destroy", 5, 70)
+	love.graphics.print("[space] or Click = destroy", 5, 70)
 	love.graphics.print("[f1-f2] = zoom", 5, 85)
 	love.graphics.print("[f3-f4] = zoom", 5, 100)
 end
