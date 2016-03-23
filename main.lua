@@ -154,6 +154,9 @@ function love.draw()
 	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
 	love.graphics.print("Zoom: "..zoom, 5, 40)
 	love.graphics.print("Particule size: "..reduc, 5, 55)
+	love.graphics.print("[space] = destroy", 5, 70)
+	love.graphics.print("[f1-f2] = zoom", 5, 85)
+	love.graphics.print("[f3-f4] = zoom", 5, 100)
 end
 
 function love.update(dt)
@@ -178,17 +181,17 @@ function love.keypressed(key)
 		dead = true
 		spawn(0, 0)
 	end
-	if key == "f2" then
+	if key == "f1" then
 		zoom = zoom + 1
 	end
-	if key == "f1" then
+	if key == "f2" then
 		zoom = (zoom > 1) and (zoom - 1) or 1
 	end
-	if key == "f4" then
+	if key == "f3" then
 		reduc = (reduc > 1) and (reduc - 1) or 1
 		psystem:setTexture( img[reduc] )
 	end
-	if key == "f3" then
+	if key == "f4" then
 		reduc = (reduc < 5) and (reduc + 1) or 5
 		psystem:setTexture( img[reduc] )
 	end
