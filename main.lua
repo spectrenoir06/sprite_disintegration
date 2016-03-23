@@ -3,18 +3,27 @@ local vector = require "vector"
 
 function love.load()
 
-	reduc = 2 -- taile des pixel (1-5)
+	reduc = 1 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
 
-	local img = love.graphics.newImage(reduc..'.png')
-	psystem = love.graphics.newParticleSystem(img, 500)
-	psystem:setParticleLifetime(5, 5) -- Particles live at least 2s and at most 5s.
+	img = {}
+
+	for i = 1, 5 do
+		img[i] = love.graphics.newImage(i..'.png')
+	end
+
+	offX = 0
+	offY = 0
+
+
+	psystem = love.graphics.newParticleSystem(img[reduc], 500)
+	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
 	psystem:setSpeed(400, 500)
 	psystem:setDirection(0)
 	psystem:setSpread(0.3)
-	-- psystem:setRotation(5)
+	psystem:setRotation(5)
 	psystem:setLinearDamping(1, 1.5)
 	-- psystem:setRelativeRotation( true )
 
@@ -27,52 +36,60 @@ function love.load()
 
 	all = {
 		{
-			img = love.graphics.newImage('ninja.png'),
+			img = love.graphics.newImage('avion.png'),
 			particules = {},
-			x = 10,
-			y = 10
+			x = 150,
+			y = 10,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
 			x = 300,
-			y = 200
+			y = 200,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
-			x = 50,
-			y = 150
+			x = 150,
+			y = 150,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('mario.png'),
 			particules = {},
-			x = 300,
-			y = 10
+			x = 400,
+			y = 50,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
 			x = 500	,
-			y = 10
+			y = 10,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
 			x = 550,
-			y = 200
+			y = 200,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
 			x = 450,
-			y = 230
+			y = 230,
+			timer = 0
 		},
 		{
 			img = love.graphics.newImage('ninja.png'),
 			particules = {},
 			x = 200,
-			y = 100
+			y = 100,
+			timer = 0
 		}
 	}
 
@@ -113,7 +130,8 @@ function love.draw()
 	love.graphics.setCanvas(canevas)
 		love.graphics.clear()
 
-		love.graphics.print(love.timer.getFPS().." : "..nb_ps, 5, 10)
+		love.graphics.push()
+			love.graphics.translate(offX, offY)
 
 		if not dead then
 			for _, obj in ipairs(all) do
@@ -126,9 +144,16 @@ function love.draw()
 				love.graphics.draw(ps, 0, 0)
 			end
 		end
+	love.graphics.pop()
 
 	love.graphics.setCanvas()
+
 	love.graphics.draw(canevas, 0, 0, 0, zoom)
+
+	love.graphics.print("FPS: "..love.timer.getFPS(), 5, 10)
+	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
+	love.graphics.print("Zoom: "..zoom, 5, 40)
+	love.graphics.print("Particule size: "..reduc, 5, 55)
 end
 
 function love.update(dt)
@@ -138,14 +163,13 @@ function love.update(dt)
 			ps:update(dt)
 			nb_ps = nb_ps + 1
 		end
-		if #obj.particules > 0 then
-			obj.timer = obj.timer + dt
-			-- if obj.timer > 5 then
-			-- 	obj.particules = {}
-			-- end
+		obj.timer = obj.timer + dt
+		if obj.timer > 2 then
+			dead = false
+			obj.particules = {}
 		end
 	end
-	timer = timer + dt * 50
+	timer = timer + dt
 end
 
 function love.keypressed(key)
@@ -154,8 +178,33 @@ function love.keypressed(key)
 		dead = true
 		spawn(0, 0)
 	end
-	if key == "e" then
-		dead = false
+	if key == "f2" then
+		zoom = zoom + 1
+	end
+	if key == "f1" then
+		zoom = (zoom > 1) and (zoom - 1) or 1
+	end
+	if key == "f4" then
+		reduc = (reduc > 1) and (reduc - 1) or 1
+		psystem:setTexture( img[reduc] )
+	end
+	if key == "f3" then
+		reduc = (reduc < 5) and (reduc + 1) or 5
+		psystem:setTexture( img[reduc] )
+	end
+
+	if key == "up" then
+		offY = offY + 10
+	end
+	if key == "down" then
+		offY = offY - 10
+	end
+
+	if key == "left" then
+		offX = offX + 10
+	end
+	if key == "right" then
+		offX = offX - 10
 	end
 end
 
