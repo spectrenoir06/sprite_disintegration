@@ -19,7 +19,7 @@ function love.load()
 	mario = love.graphics.newImage('mario.png')
 
 
-	psystem = love.graphics.newParticleSystem(img[reduc], 1000)
+	psystem = love.graphics.newParticleSystem(img[reduc], 2500)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
@@ -28,7 +28,6 @@ function love.load()
 	psystem:setSpread(0.3)
 	psystem:setRotation(5)
 	psystem:setLinearDamping(1, 1.5)
-	-- psystem:setRelativeRotation( true )
 
 	canevas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 	canevas:setFilter('nearest', 'nearest')
@@ -106,6 +105,7 @@ function spawn(explox, exploy)
 		obj.particules = {}
 		obj.timer = 0
 		local data = obj.img:getData()
+
 		for x = 1, obj.img:getWidth() / reduc do
 			for y = 1, obj.img:getHeight() / reduc do
 				local r, g, b, a = data:getPixel(x * reduc - 1, y * reduc - 1)
@@ -117,8 +117,11 @@ function spawn(explox, exploy)
 					)
 					if obj.particules[str] == nil then
 						local ps = psystem:clone()
-						local dx, dy = (x + obj.x) - explox, (y + obj.y) - exploy
-						local rot =  math.atan2(dx, dy)
+
+						local dx = explox - (obj.x + x)
+						local dy = exploy - (obj.y + y)
+						local rot = math.atan2(-dx,dy) - 1.5708
+
 						ps:setDirection(rot)
 						ps:setColors(r, g, b, a, r, g, b, a)
 						obj.particules[str] = ps
@@ -170,17 +173,6 @@ function love.draw()
 	love.graphics.print("[f3-f4] = zoom", 5, 200)
 	love.graphics.print("[mouse wheel] = color", 5, 215)
 
-
-	-- if love.mouse.isDown(1) then
-	-- 	local dx, dy = love.mouse.getX() - 300, love.mouse.getY() - 300
-	-- 	local r =  math.atan2(dx, dy)
-	-- 	love.graphics.setColor(255,255,0)
-	-- 	love.graphics.line(love.mouse.getX(), love.mouse.getY(), 300, 300)
-	-- 	love.graphics.setColor(255,0,0)
-	-- 	love.graphics.draw(mario, 300, 300, r)
-	-- 	love.graphics.setColor(255,255,255)
-	-- 	print(dx,dy, r + math.pi)
-	-- end
 end
 
 function love.update(dt)
@@ -243,7 +235,7 @@ end
 
 
 function love.wheelmoved( x, y )
-	print(x,y)
+	-- print(x,y)
 	reduc_color = reduc_color + y
 	if reduc_color < 1 then reduc_color = 1 end
 	if reduc_color > 256 then reduc_color = 256 end
