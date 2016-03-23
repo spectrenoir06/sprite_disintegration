@@ -98,6 +98,8 @@ function love.load()
 
 	shader = love.graphics.newShader("wave.frag")
 
+	shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
+
 end
 
 function spawn(explox, exploy)
@@ -162,8 +164,11 @@ function love.draw()
 		love.graphics.pop()
 	love.graphics.setCanvas()
 
-	love.graphics.setShader(shader)
+	if dead then
+		love.graphics.setShader(shader)
+	end
 	love.graphics.draw(canevas, 0, 0, 0, zoom)
+
 	love.graphics.setShader()
 
 	love.graphics.print("FPS: "..love.timer.getFPS(), 5, 10)
@@ -194,10 +199,11 @@ function love.update(dt)
 	end
 	timer = timer + dt
 	time = dt + time;
-	-- When converting, the following variables were requested from the shader...
-	shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
-	shader:send('iGlobalTime', time)
-	shader:send('iMouse', { love.mouse.getX(), love.mouse.getY(), 0, 0 })
+
+	if dead then
+		-- shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
+		shader:send('iGlobalTime', time)
+	end
 end
 
 function love.keypressed(key)
@@ -239,6 +245,8 @@ end
 
 function love.mousepressed(x, y, button)
 	dead = true
+	time = 0
+	shader:send('iMouse', { love.mouse.getX() / zoom, love.mouse.getY() / zoom, 0, 0 })
 	spawn(x, y)
 end
 

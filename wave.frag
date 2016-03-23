@@ -8,8 +8,8 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords){
 	vec2 fragCoord = texture_coords * iResolution.xy;
 
 	//Sawtooth function to pulse from centre.
-	number offset = (iGlobalTime - floor(iGlobalTime)) / (iGlobalTime);
-		number CurrentTime = (iGlobalTime)*(offset);
+	// number offset = (iGlobalTime - floor(iGlobalTime)) / (iGlobalTime);
+		number CurrentTime = (iGlobalTime);//*(offset);
 
 	vec3 WaveParams = vec3(10.0, 0.2, 0.1 );
 
@@ -19,10 +19,10 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords){
 	vec2 WaveCentre = vec2( iMouse.xy / iResolution.xy );
 
 	// vec2 WaveCentre = vec2(0.5, 0.5);
-	WaveCentre.y *= ratio;
+	// WaveCentre.y *= ratio;
 
 	vec2 texCoord = fragCoord.xy / iResolution.xy;
-	texCoord.y *= ratio;
+	// texCoord.y *= ratio;
 	number Dist = distance(texCoord, WaveCentre);
 
 
