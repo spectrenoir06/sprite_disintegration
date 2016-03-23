@@ -4,18 +4,18 @@ local vector = require "vector"
 function love.load()
 
 	reduc = 1 -- taile des pixel (1-5)
-	zoom = 2  -- (zoom 1 - 999)
+	zoom  = 1  -- (zoom 1 - 999)
 
 	local img = love.graphics.newImage(reduc..'.png')
 	psystem = love.graphics.newParticleSystem(img, 1)
-	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
+	psystem:setParticleLifetime(5, 5) -- Particles live at least 2s and at most 5s.
 	psystem:setLinearAcceleration(-10, -10, 10, 10) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
 	psystem:setSpeed(400, 500)
 	psystem:setDirection(0)
 	psystem:setSpread(0.3)
 	-- psystem:setRotation(5)
-	psystem:setLinearDamping( 1, 1.5 )
+	psystem:setLinearDamping(1, 1.5)
 	-- psystem:setRelativeRotation( true )
 
 	canevas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
@@ -85,20 +85,24 @@ function spawn(explox, exploy)
 	for _, obj in ipairs(all) do
 		obj.particules = {}
 		obj.timer = 0
+		local data = obj.img:getData()
 		for x = 1, obj.img:getWidth() / reduc do
 			for y = 1, obj.img:getHeight() / reduc do
-				local r, g, b, a = obj.img:getData():getPixel(x * reduc - 1, y * reduc - 1)
+				local r, g, b, a = data:getPixel(x * reduc - 1, y * reduc - 1)
 				if a == 255 then
-					local ps = psystem:clone()
-					local v = vector(x + obj.x, y + obj.y)
-					ps:setDirection(v:angleTo(explo))
-					ps:setColors(r, g, b, a, r, g, b, a)
-					table.insert(obj.particules, {
-						ps = ps,
-						x = x * reduc,
-						y = y * reduc
-					})
-					ps:emit(1)
+					if obj.particules[string.format("#%x%x%x",r,g,b)] == nil then
+						local ps = psystem:clone()
+						local v = vector(x + obj.x, y + obj.y)
+						ps:setDirection(v:angleTo(explo))
+						ps:setColors(r, g, b, a, r, g, b, a)
+						obj.particules[string.format("#%x%x%x",r,g,b)] = ps
+						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
+						ps:emit(1)
+					else
+						local ps = obj.particules[string.format("#%x%x%x",r,g,b)]
+						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
+						ps:emit(1)
+					end
 				end
 			end
 		end
@@ -118,8 +122,8 @@ function love.draw()
 		end
 
 		for _, obj in ipairs(all) do
-			for _, ps in ipairs(obj.particules) do
-				love.graphics.draw(ps.ps, obj.x + ps.x, obj.y + ps.y)
+			for _, ps in pairs(obj.particules) do
+				love.graphics.draw(ps, 0, 0)
 			end
 		end
 
@@ -130,13 +134,13 @@ end
 function love.update(dt)
 	nb_ps = 0
 	for _, obj in ipairs(all) do
-		for _, ps in ipairs(obj.particules) do
-			ps.ps:update(dt)
+		for _, ps in pairs(obj.particules) do
+			ps:update(dt)
 			nb_ps = nb_ps + 1
 		end
 		if #obj.particules > 0 then
 			obj.timer = obj.timer + dt
-			if obj.timer > 2 then
+			if obj.timer > 5 then
 				obj.particules = {}
 			end
 		end
