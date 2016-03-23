@@ -38,7 +38,7 @@ function love.load()
 
 	all = {
 		{
-			img = love.graphics.newImage('ninja.png'),
+			img = love.graphics.newImage('boo.png'),
 			particules = {},
 			x = 300,
 			y = 300,
@@ -66,7 +66,7 @@ function love.load()
 			timer = 0
 		},
 		{
-			img = love.graphics.newImage('ninja.png'),
+			img = love.graphics.newImage('avion.png'),
 			particules = {},
 			x = 500	,
 			y = 10,
