@@ -1,5 +1,6 @@
 local vector = require "vector"
 
+local time = 0
 
 function love.load()
 
@@ -16,8 +17,7 @@ function love.load()
 	offX = 0
 	offY = 0
 
-	mario = love.graphics.newImage('mario.png')
-
+	bg = love.graphics.newImage('bg.png')
 
 	psystem = love.graphics.newParticleSystem(img[reduc], 2500)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
@@ -25,7 +25,7 @@ function love.load()
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
 	psystem:setSpeed(400, 500)
 	psystem:setDirection(0)
-	psystem:setSpread(0.3)
+	psystem:setSpread(0.1)
 	psystem:setRotation(5)
 	psystem:setLinearDamping(1, 1.5)
 
@@ -97,6 +97,8 @@ function love.load()
 
 	nb_ps = 0
 
+	shader = love.graphics.newShader("wave.frag")
+
 end
 
 function spawn(explox, exploy)
@@ -145,22 +147,25 @@ function love.draw()
 		love.graphics.push()
 			love.graphics.translate(offX, offY)
 
-		if not dead then
+			love.graphics.draw(bg, 0, 0)
+
+			if not dead then
+				for _, obj in ipairs(all) do
+					love.graphics.draw(obj.img, obj.x, obj.y)
+				end
+			end
+
 			for _, obj in ipairs(all) do
-				love.graphics.draw(obj.img, obj.x, obj.y)
+				for _, ps in pairs(obj.particules) do
+					love.graphics.draw(ps, 0, 0)
+				end
 			end
-		end
-
-		for _, obj in ipairs(all) do
-			for _, ps in pairs(obj.particules) do
-				love.graphics.draw(ps, 0, 0)
-			end
-		end
-	love.graphics.pop()
-
+		love.graphics.pop()
 	love.graphics.setCanvas()
 
+	love.graphics.setShader(shader)
 	love.graphics.draw(canevas, 0, 0, 0, zoom)
+	love.graphics.setShader()
 
 	love.graphics.print("FPS: "..love.timer.getFPS(), 5, 10)
 	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
@@ -189,13 +194,18 @@ function love.update(dt)
 		end
 	end
 	timer = timer + dt
+	time = dt + time;
+	-- When converting, the following variables were requested from the shader...
+	shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
+	shader:send('iGlobalTime', time)
+	-- shader:send('iMouse', { love.mouse.getX(), love.mouse.getY(), 0, 0 })
 end
 
 function love.keypressed(key)
 
 	if key == 'space' then
 		dead = true
-		spawn(0, 0)
+		spawn(720, 480)
 	end
 	if key == "f1" then
 		zoom = zoom + 1
