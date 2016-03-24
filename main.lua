@@ -104,38 +104,43 @@ function love.load()
 end
 
 function spawn(explox, exploy)
-	local explo = vector(explox, exploy)
+	local demiPi = math.pi / 2
+	local atan2 = math.atan2
+	local floor = math.floor
+
 	for _, obj in ipairs(all) do
-		obj.particules = {}
+		local particules = {}
 		obj.timer = 0
 		local data = obj.img:getData()
+		local ox, oy = obj.x, obj.y
 
 		for x = 1, obj.img:getWidth() / reduc do
 			for y = 1, obj.img:getHeight() / reduc do
 				local r, g, b, a = data:getPixel(x * reduc - 1, y * reduc - 1)
 				if a == 255 then
-					local str = string.format("#%x%x%x",
-						math.floor(r/reduc_color),
-						math.floor(g/reduc_color),
-						math.floor(b/reduc_color)
+					local str = string.format("%x%x%x",
+						floor(r/reduc_color),
+						floor(g/reduc_color),
+						floor(b/reduc_color)
 					)
 					local ps
-					if obj.particules[str] == nil then
+					if particules[str] == nil then
 						ps = psystem:clone()
-						ps:setColors(r, g, b, a, r, g, b, a)
-						obj.particules[str] = ps
+						ps:setColors(r, g, b, a)
+						particules[str] = ps
 					else
-						ps = obj.particules[str]
+						ps = particules[str]
 					end
-					local dx = explox - (obj.x + x)
-					local dy = exploy - (obj.y + y)
-					local rot = math.atan2(-dx,dy) - 1.5708
+					local dx = explox - (ox + x)
+					local dy = exploy - (oy + y)
+					local rot = atan2(-dx, dy) - demiPi
 					ps:setDirection(rot)
-					ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
+					ps:setPosition(ox + x * reduc, oy + y * reduc)
 					ps:emit(1)
 				end
 			end
 		end
+		obj.particules = particules
 	end
 end
 
