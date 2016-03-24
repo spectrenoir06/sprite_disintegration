@@ -7,7 +7,7 @@ function love.load()
 	reduc = 1 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
 	reduc_color =  120 --( 1 - 256)
-	max_particule_by_color = 2500
+	max_particule_by_color = 1000
 
 	img = {}
 
@@ -21,9 +21,8 @@ function love.load()
 	bg = love.graphics.newImage('bg.png')
 
 	psystem = love.graphics.newParticleSystem(img[reduc], max_particule_by_color)
-	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
-	psystem:setLinearAcceleration(0, -0, 0, -0) -- Randomized movement towards the bottom of the screen.
-	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
+	psystem:setParticleLifetime(1, 2)                       -- Particles live at least 2s and at most 5s.
+	psystem:setLinearAcceleration(0, -0, 0, -0)             -- Randomized movement towards the bottom of the screen.
 	psystem:setSpeed(400, 500)
 	psystem:setSpread(0.1)
 	psystem:setRotation(5)
@@ -113,7 +112,6 @@ function spawn(explox, exploy)
 		obj.timer = 0
 		local data = obj.img:getData()
 		local ox, oy = obj.x, obj.y
-
 		for x = 1, obj.img:getWidth() / reduc do
 			for y = 1, obj.img:getHeight() / reduc do
 				local r, g, b, a = data:getPixel(x * reduc - 1, y * reduc - 1)
