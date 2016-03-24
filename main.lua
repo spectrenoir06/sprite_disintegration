@@ -7,7 +7,7 @@ function love.load()
 	reduc = 1 -- taile des pixel (1-5)
 	zoom  = 1  -- (zoom 1 - 999)
 	reduc_color =  120 --( 1 - 256)
-	max_particule_by_color = 1000
+	max_particule_by_color = 2000
 
 	img = {}
 
