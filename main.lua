@@ -21,7 +21,7 @@ function love.load()
 
 	psystem = love.graphics.newParticleSystem(img[reduc], 2500)
 	psystem:setParticleLifetime(1, 2) -- Particles live at least 2s and at most 5s.
-	psystem:setLinearAcceleration(10, -10, 10, -10) -- Randomized movement towards the bottom of the screen.
+	psystem:setLinearAcceleration(0, -0, 0, -0) -- Randomized movement towards the bottom of the screen.
 	psystem:setColors(255, 255, 255, 255, 255, 255, 255, 0) -- Fade to black.
 	psystem:setSpeed(400, 500)
 	psystem:setSpread(0.1)
@@ -118,23 +118,20 @@ function spawn(explox, exploy)
 						math.floor(g/reduc_color),
 						math.floor(b/reduc_color)
 					)
+					local ps
 					if obj.particules[str] == nil then
-						local ps = psystem:clone()
-
-						local dx = explox - (obj.x + x)
-						local dy = exploy - (obj.y + y)
-						local rot = math.atan2(-dx,dy) - 1.5708
-
-						ps:setDirection(rot)
+						ps = psystem:clone()
 						ps:setColors(r, g, b, a, r, g, b, a)
 						obj.particules[str] = ps
-						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
-						ps:emit(1)
 					else
-						local ps = obj.particules[str]
-						ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
-						ps:emit(1)
+						ps = obj.particules[str]
 					end
+					local dx = explox - (obj.x + x)
+					local dy = exploy - (obj.y + y)
+					local rot = math.atan2(-dx,dy) - 1.5708
+					ps:setDirection(rot)
+					ps:setPosition(obj.x + x * reduc, obj.y + y * reduc)
+					ps:emit(1)
 				end
 			end
 		end
@@ -148,7 +145,7 @@ function love.draw()
 		love.graphics.push()
 			love.graphics.translate(offX, offY)
 
-			love.graphics.draw(bg, 0, 0)
+			-- love.graphics.draw(bg, 0, 0)
 
 			if not dead then
 				for _, obj in ipairs(all) do
@@ -247,7 +244,7 @@ function love.mousepressed(x, y, button)
 	dead = true
 	time = 0
 	shader:send('iMouse', { love.mouse.getX() / zoom, love.mouse.getY() / zoom, 0, 0 })
-	spawn(x, y)
+	spawn(x / zoom, y / zoom)
 end
 
 
