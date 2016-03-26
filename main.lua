@@ -18,6 +18,8 @@ function love.load()
 	offX = 0
 	offY = 0
 
+	bg_number = 0
+
 	bg = love.graphics.newImage('bg.png')
 
 	psystem = love.graphics.newParticleSystem(img[reduc], max_particule_by_color)
@@ -149,7 +151,16 @@ function love.draw()
 		love.graphics.push()
 			love.graphics.translate(offX, offY)
 
-			-- love.graphics.draw(bg, 0, 0)
+			if bg_number == 0 then
+				love.graphics.draw(bg, 0, 0)
+			elseif bg_number == 1 then
+				love.graphics.setBackgroundColor(255, 255, 255)
+			elseif bg_number == 2 then
+				love.graphics.setBackgroundColor(128, 128, 128)
+			elseif bg_number == 3 then
+				love.graphics.setBackgroundColor(0, 0, 0)
+			end
+
 
 			if not dead then
 				for _, obj in ipairs(all) do
@@ -173,7 +184,7 @@ function love.draw()
 	love.graphics.setShader()
 
 	love.graphics.print("FPS: "..love.timer.getFPS(), 5, 10)
-	love.graphics.print("Particules systemes: "..nb_ps, 5, 25)
+	love.graphics.print("Particules systemes: "..nb_ps..", Particules: "..nb_particule, 5, 25)
 	love.graphics.print("Zoom: "..zoom, 5, 40)
 	love.graphics.print("Particule size: "..reduc, 5, 55)
 	love.graphics.print("reduc color:"..reduc_color, 5, 70)
@@ -181,15 +192,18 @@ function love.draw()
 	love.graphics.print("[space] or Click = destroy", 5, 170)
 	love.graphics.print("[f1-f2] = zoom", 5, 185)
 	love.graphics.print("[f3-f4] = zoom", 5, 200)
-	love.graphics.print("[mouse wheel] = color", 5, 215)
+	love.graphics.print("[f5] = change background", 5, 215)
+	love.graphics.print("[mouse wheel] = color", 5, 230)
 
 end
 
 function love.update(dt)
 	nb_ps = 0
+	nb_particule = 0
 	for _, obj in ipairs(all) do
 		for _, ps in pairs(obj.particules) do
 			ps:update(dt)
+			nb_particule = nb_particule + ps:getCount()
 			nb_ps = nb_ps + 1
 		end
 		obj.timer = obj.timer + dt
@@ -202,7 +216,6 @@ function love.update(dt)
 	time = dt + time;
 
 	if dead then
-		-- shader:send('iResolution', { love.graphics.getWidth(), love.graphics.getHeight(), 1 })
 		shader:send('iGlobalTime', time)
 	end
 end
@@ -226,6 +239,10 @@ function love.keypressed(key)
 	if key == "f4" then
 		reduc = (reduc < 5) and (reduc + 1) or 5
 		psystem:setTexture( img[reduc] )
+	end
+	if key == "f5" then
+		bg_number = bg_number + 1
+		if bg_number > 3 then bg_number = 0 end
 	end
 
 	if key == "up" then
